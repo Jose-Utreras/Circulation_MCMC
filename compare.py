@@ -13,6 +13,8 @@ import time
 from scipy.interpolate import interp1d
 from astropy.table import Table , Column ,vstack,hstack
 
+print('a')
+
 def sigmas_tab(name,n1,n2,pc,vo,N):
 
     psg_file='Files_model_2/'+name+'_psg.txt'
@@ -208,21 +210,21 @@ for k, rmax in enumerate(rmax_set):
         pc_arr      = parametros['pc']
         vo_arr      = parametros['vo']
 
-        ##### exponent range ##### 
+        ##### exponent range #####
 
         N16, N50, N84 = np.percentile(n_arr, [16,50,84])
 
-        ##### second exponent #### 
+        ##### second exponent ####
 
         M16, M50, M84 = np.percentile(m_arr, [16,50,84])
 
         ##########################
-        ##### kscale  range  ##### 
+        ##### kscale  range  #####
 
         K16, K50, K84 = np.percentile(pc_arr, [16,50,84])
 
         ##########################
-        ##### velocity range ##### 
+        ##### velocity range #####
 
         V16, V50, V84 = np.percentile(vo_arr, [16,50,84])
 
@@ -275,8 +277,8 @@ for k, rmax in enumerate(rmax_set):
         qu60            = np.zeros(n_scales,dtype=float)
         qu70            = np.zeros(n_scales,dtype=float)
         qu80            = np.zeros(n_scales,dtype=float)
-        qu90            = np.zeros(n_scales,dtype=float)         
-        
+        qu90            = np.zeros(n_scales,dtype=float)
+
         ql10            = np.zeros(n_scales,dtype=float)
         ql20            = np.zeros(n_scales,dtype=float)
         ql30            = np.zeros(n_scales,dtype=float)
@@ -286,7 +288,7 @@ for k, rmax in enumerate(rmax_set):
         ql70            = np.zeros(n_scales,dtype=float)
         ql80            = np.zeros(n_scales,dtype=float)
         ql90            = np.zeros(n_scales,dtype=float)
-        
+
         radius  = 0.5*(float(new_lista[0].split('-')[-1])+float(new_lista[0].split('-')[-2]))
 
         for ij, nl in enumerate(new_lista):
@@ -295,7 +297,7 @@ for k, rmax in enumerate(rmax_set):
             tabla   = Table.read(nl,path='data')
             X       = tabla['vort']/R**2/DA
             Y       = tabla['av_vort']/R**2/DA
-            
+
             Z       = Y + np.random.normal(0,mean_walker[ij],size=len(Y))/DA
             Zu      = Y + np.random.normal(0,mean_walker[ij]+std_walker[ij],size=len(Y))/DA
 
@@ -382,7 +384,7 @@ for k, rmax in enumerate(rmax_set):
         tabla['q60']          = Column(np.array(q60+delta))
         tabla['q70']          = Column(np.array(q70+delta))
         tabla['q80']          = Column(np.array(q80+delta))
-        tabla['q90']          = Column(np.array(q90+delta)) 
+        tabla['q90']          = Column(np.array(q90+delta))
 
         tabla['ql10']          = Column(np.array(ql10+delta))
         tabla['ql20']          = Column(np.array(ql20+delta))
@@ -402,7 +404,7 @@ for k, rmax in enumerate(rmax_set):
         tabla['qu60']          = Column(np.array(qu60+delta))
         tabla['qu70']          = Column(np.array(qu70+delta))
         tabla['qu80']          = Column(np.array(qu80+delta))
-        tabla['qu90']          = Column(np.array(qu90+delta)) 
+        tabla['qu90']          = Column(np.array(qu90+delta))
 
         tabla.write('Tables/'+name_file+'_%05d_percentiles'%int(radius) ,path='data',format='hdf5',overwrite=True)
         os.system('rclone copy Tables/'+name_file+'_%05d_percentiles uchile:Double_Power/Percentiles/'  %int(radius))
