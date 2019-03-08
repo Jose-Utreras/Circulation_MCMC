@@ -12,7 +12,7 @@ from subprocess import check_output
 import time
 from scipy.interpolate import interp1d
 from astropy.table import Table , Column ,vstack,hstack
- 
+
 eta=2*0.6744897501
 kms_to_pcmyr=1.022
 
@@ -28,7 +28,7 @@ name_file=cmdargs[-4]
 snapshot=name_file
 print(1)
 directory='/data6/jutreras/Circulation-square/Bin_Tables/'+name_file[:-4]+'/'
-
+print(directory)
 rbin_string='-%05d' %int(Rmin)+ '-%05d' %int(Rmax)
 rbin_prefix='_%05d' %int(Rmin)+ '_%05d' %int(Rmax)
 
@@ -40,9 +40,7 @@ DA=DX**2                                    # Area of pixel
 p_min=4.0/L
 p_max=1.0/(4.0*DX)
 n1_min=0.801#1.333-0.8
-n1_max=1.901#1.333+0.8
-n2_min=2.0153#2.000-0.8
-n2_max=2.9801#2.000+0.8
+n1_max=2.901#1.333+0.8
 dv_min=-5.0
 dv_max=5.0
 
@@ -117,7 +115,7 @@ for ij in range(Number_of_resolutions):
     parameters = name_file +' '+str(c_min)+' '+str(c_max)+' '+str(c_bins)+' '
     parameters+= str(c_width)+' '+str(c_sig)+' '+str(c_len)
     subprocess.call(['./histogram_m_2 '+parameters], stdin = sys.stdin, shell=True)
-            
+
     y,errors=np.loadtxt('Files_model_2/'+name_file+'_hist_data.txt',unpack=True)
     x=np.linspace(c_min,c_max,c_bins+1)
     x=0.5*(x[1:]+x[:-1])
@@ -135,7 +133,7 @@ for ij in range(Number_of_resolutions):
     sig_lim=0.5*(fsum(0.84)-fsum(0.16))
     sig_min,sig_max=min(sig_lim,std_lim)/2.0,1.5*max(sig_lim,std_lim)
 
-   
+
     try:
         popt, pcov   = curve_fit(gaussian,x,y,sigma=errors,bounds=([a_min,mu_min,sig_min],[a_max,mu_max,sig_max]))
         popt1,pcov1  = curve_fit(gaussian,x,y,sigma=errors,method='trf',bounds=([a_min,mu_min,sig_min],[a_max,mu_max,sig_max]))
@@ -235,9 +233,8 @@ for sa,re,se in zip(stds,resolutions,stot):
     error_array+=' '+str(se)
 
 print('Writing parameters')
-parameters=' '+str(n1_min)+' '+str(n1_max)+' '+str(n2_min)+' '+str(n2_max)+' '+str(p_min*2)+' '+str(p_max*0.5)+' '+str(dv_min)+' '+str(dv_max)
+parameters=' '+str(n1_min)+' '+str(n1_max)+' '+str(p_min*2)+' '+str(p_max*0.5)+' '+str(dv_min)+' '+str(dv_max)
 linea=name_file+' '+snapshot+' '+str(L)+' '+str(N) +' '+ parameters + Resolution + sigma_array + error_array
 variables=open('Files_model_2/'+name_file+'_reduce_parameters_m_2.txt','w')
 variables.write(linea)
 variables.close()
-

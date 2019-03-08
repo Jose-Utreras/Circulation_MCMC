@@ -13,20 +13,16 @@ import time
 from scipy.interpolate import interp1d
 from astropy.table import Table , Column ,vstack,hstack
 
-print('a')
-
-def sigmas_tab(name,n1,n2,pc,vo,N):
+def sigmas_tab(name,n1,pc,vo,N):
 
     psg_file='Files_model_2/'+name+'_psg.txt'
-    print(psg_file)
+    #print(psg_file)
     Parameters=np.loadtxt(psg_file,dtype=str)
 
     n1_min=float(Parameters[3])
     n1_max=float(Parameters[4])
-    n2_min=float(Parameters[5])
-    n2_max=float(Parameters[6])
-    pc_min=float(Parameters[7])
-    pc_max=float(Parameters[8])
+    pc_min=float(Parameters[5])
+    pc_max=float(Parameters[6])
 
     del Parameters
 
@@ -37,121 +33,82 @@ def sigmas_tab(name,n1,n2,pc,vo,N):
     number_file = l1/3;
 
     if l1%3==0: i1 = 0
-    if l1%3==1: i1 = N*N
-    if l1%3==2: i1 = 2*N*N
+    if l1%3==1: i1 = N
+    if l1%3==2: i1 = 2*N
 
-    aux = (N-1)*1.0*(n2-n2_min)/(n2_max-n2_min)
+    aux = (N-1)*1.0*(np.log(1.0*pc/pc_min)/np.log(1.0*pc_max/pc_min))
 
     l2 = int(aux)
-    u2 = l2+1
-
-    i2 = l2*N
-    aux = (N-1)*1.0*(np.log(1.0*pc/pc_min)/np.log(1.0*pc_max/pc_min)) +1
-
-    l3 = int(aux)
-    i3 = l3
+    i2 = l2
 
     fp = open('Files_model_2/'+name+'_sampler%03d.txt' %number_file)
 
-    iline_1  = i1+i2+i3-1
-    iline_2  = i1+i2+i3
-    iline_3  = i1+i2+i3+N-1
-    iline_4  = i1+i2+i3+N
+
+    iline_1  = i1+i2
+    iline_2  = i1+i2+1
 
     for i, line in enumerate(fp):
         if i == iline_1:
             sline_1 = line
         if i == iline_2:
             sline_2 = line
-        if i == iline_3:
-            sline_3 = line
-        if i == iline_4:
-            sline_4 = line
-        if i>iline_4:
+        if i>iline_2:
             break
 
     number_file = int((l1+1)/3);
 
     if (l1+1)%3==0: i1 = 0
-    if (l1+1)%3==1: i1 = N*N
-    if (l1+1)%3==2: i1 = 2*N*N
+    if (l1+1)%3==1: i1 = N
+    if (l1+1)%3==2: i1 = 2*N
 
-    aux = (N-1)*1.0*(n2-n2_min)/(n2_max-n2_min)
+    aux = (N-1)*1.0*(np.log(1.0*pc/pc_min)/np.log(1.0*pc_max/pc_min))
 
     l2 = int(aux)
-    u2 = l2+1
-
-    i2 = l2*N
-    aux = (N-1)*1.0*(np.log(1.0*pc/pc_min)/np.log(1.0*pc_max/pc_min)) +1
-
-    l3 = int(aux)
-    i3 = l3
+    i2 = l2
 
     fp = open('Files_model_2/'+name+'_sampler%03d.txt' %number_file)
 
-    iline_5  = i1+i2+i3-1
-    iline_6  = i1+i2+i3
-    iline_7  = i1+i2+i3+N-1
-    iline_8  = i1+i2+i3+N
+    iline_3  = i1+i2
+    iline_4  = i1+i2+1
 
     for i, line in enumerate(fp):
-        if i == iline_5:
-            sline_5 = line
-        if i == iline_6:
-            sline_6 = line
-        if i == iline_7:
-            sline_7 = line
-        if i == iline_8:
-            sline_8 = line
-        if i>iline_8:
+        if i == iline_3:
+            sline_3 = line
+        if i == iline_4:
+            sline_4 = line
+        if i > iline_4:
             break
 
     l1=sline_1.split('\t')
     l2=sline_2.split('\t')
     l3=sline_3.split('\t')
     l4=sline_4.split('\t')
-    l5=sline_5.split('\t')
-    l6=sline_6.split('\t')
-    l7=sline_7.split('\t')
-    l8=sline_8.split('\t')
 
     l1=np.array(l1,dtype=float)
     l2=np.array(l2,dtype=float)
     l3=np.array(l3,dtype=float)
     l4=np.array(l4,dtype=float)
-    l5=np.array(l5,dtype=float)
-    l6=np.array(l6,dtype=float)
-    l7=np.array(l7,dtype=float)
-    l8=np.array(l8,dtype=float)
 
-    v1=1.0/np.abs((n1-l1[0])*(n2-l1[1])*(pc-l1[2]))
-    v2=1.0/np.abs((n1-l2[0])*(n2-l2[1])*(pc-l2[2]))
-    v3=1.0/np.abs((n1-l3[0])*(n2-l3[1])*(pc-l3[2]))
-    v4=1.0/np.abs((n1-l4[0])*(n2-l4[1])*(pc-l4[2]))
-    v5=1.0/np.abs((n1-l5[0])*(n2-l5[1])*(pc-l5[2]))
-    v6=1.0/np.abs((n1-l6[0])*(n2-l6[1])*(pc-l6[2]))
-    v7=1.0/np.abs((n1-l7[0])*(n2-l7[1])*(pc-l7[2]))
-    v8=1.0/np.abs((n1-l8[0])*(n2-l8[1])*(pc-l8[2]))
+    v1=1.0/np.abs((n1-l1[0])*(pc-l1[1]))
+    v2=1.0/np.abs((n1-l2[0])*(pc-l2[1]))
+    v3=1.0/np.abs((n1-l3[0])*(pc-l3[1]))
+    v4=1.0/np.abs((n1-l4[0])*(pc-l4[1]))
 
-    print(n1,l1[0],l2[0],l3[0],l4[0],l5[0],l6[0],l7[0],l8[0])
-    print(n2,l1[1],l2[1],l3[1],l4[1],l5[1],l6[1],l7[1],l8[1])
-    print(pc,l1[2],l2[2],l3[2],l4[2],l5[2],l6[2],l7[2],l8[2])
-    vtot=v1+v2+v3+v4+v5+v6+v7+v8
+    print(n1,l1[0],l2[0],l3[0],l4[0])
+    print(pc,l1[1],l2[1],l3[1],l4[1])
+
+    vtot=v1+v2+v3+v4
     v1/=vtot
     v2/=vtot
     v3/=vtot
     v4/=vtot
-    v5/=vtot
-    v6/=vtot
-    v7/=vtot
-    v8/=vtot
 
-    sigma=v1*l1[3:]+v2*l2[3:]+v3*l3[3:]+v4*l4[3:]+v5*l5[3:]+v6*l6[3:]+v7*l7[3:]+v8*l8[3:]
+    sigma=v1*l1[2:]+v2*l2[2:]+v3*l3[2:]+v4*l4[2:]
     return vo*sigma
 
 
 eta=2*0.6744897501
-kms_to_pcmyr=1.04589549342
+kms_to_pcmyr=1.022
 
 cmdargs   = sys.argv
 L         = float(cmdargs[-1])                        # Image size in parsecs
@@ -206,17 +163,12 @@ for k, rmax in enumerate(rmax_set):
         parametros = Table.read(walker_file,path='data')
 
         n_arr       = parametros['n1']
-        m_arr       = parametros['n2']
         pc_arr      = parametros['pc']
         vo_arr      = parametros['vo']
 
         ##### exponent range #####
 
         N16, N50, N84 = np.percentile(n_arr, [16,50,84])
-
-        ##### second exponent ####
-
-        M16, M50, M84 = np.percentile(m_arr, [16,50,84])
 
         ##########################
         ##### kscale  range  #####
@@ -231,19 +183,17 @@ for k, rmax in enumerate(rmax_set):
         ##########################
         del parametros
 
-        mean_walker = sigmas_tab(name_file,N50,M50,K50,V50,60)
+        mean_walker = sigmas_tab(name_file,N50,K50,V50,60)
         ##mean_walker*=DX**2
 
-        wn_1  = sigmas_tab(name_file,N16,M50,K50,V50,60)
-        wn_2  = sigmas_tab(name_file,N84,M50,K50,V50,60)
-        wm_1  = sigmas_tab(name_file,N50,M16,K50,V50,60)
-        wm_2  = sigmas_tab(name_file,N50,M84,K50,V50,60)
-        wk_1  = sigmas_tab(name_file,N50,M50,K16,V50,60)
-        wk_2  = sigmas_tab(name_file,N50,M50,K84,V50,60)
-        wv_1  = sigmas_tab(name_file,N50,M50,K50,V16,60)
-        wv_2  = sigmas_tab(name_file,N50,M50,K50,V84,60)
+        wn_1  = sigmas_tab(name_file,N16,K50,V50,60)
+        wn_2  = sigmas_tab(name_file,N84,K50,V50,60)
+        wk_1  = sigmas_tab(name_file,N50,K16,V50,60)
+        wk_2  = sigmas_tab(name_file,N50,K84,V50,60)
+        wv_1  = sigmas_tab(name_file,N50,K50,V16,60)
+        wv_2  = sigmas_tab(name_file,N50,K50,V84,60)
 
-        std_walker=np.sqrt(((wv_2-wv_1)/2)**2 + ((wm_2-wm_1)/2)**2 + ((wn_2-wn_1)/2)**2 + ((wk_2-wk_1)/2)**2)
+        std_walker=np.sqrt(((wv_2-wv_1)/2)**2 + ((wn_2-wn_1)/2)**2 + ((wk_2-wk_1)/2)**2)
 
         #break
         n_scales        = len(new_lista)
@@ -361,7 +311,7 @@ for k, rmax in enumerate(rmax_set):
         f1.savefig('Plots/'+name_file+'_%05d_percentiles.png' %int(radius))
         plt.close(f1)
 
-        os.system('rclone copy Plots/'+name_file+'_%05d_percentiles.png uchile:Double_Power/Percentiles/'  %int(radius))
+        os.system('rclone copy Plots/'+name_file+'_%05d_percentiles.png uchile:Single_Power/Percentiles/'  %int(radius))
 
         tabla=Table()
         tabla['resolution']   = Column(np.array(res)       , description='resolution in pc')
@@ -407,4 +357,4 @@ for k, rmax in enumerate(rmax_set):
         tabla['qu90']          = Column(np.array(qu90+delta))
 
         tabla.write('Tables/'+name_file+'_%05d_percentiles'%int(radius) ,path='data',format='hdf5',overwrite=True)
-        os.system('rclone copy Tables/'+name_file+'_%05d_percentiles uchile:Double_Power/Percentiles/'  %int(radius))
+        os.system('rclone copy Tables/'+name_file+'_%05d_percentiles uchile:Single_Power/Percentiles/'  %int(radius))
